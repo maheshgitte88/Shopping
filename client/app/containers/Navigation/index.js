@@ -25,7 +25,7 @@ import {
   DropdownMenu,
   DropdownItem
 } from 'reactstrap';
-
+import log from '../../../public/images/Logo.png'
 import actions from '../../actions';
 
 import Button from '../../components/Common/Button';
@@ -142,7 +142,7 @@ class Navigation extends React.PureComponent {
             <Row>
               <Col md='4' className='text-center d-none d-md-block'>
                 <i className='fa fa-truck' />
-                <span>Free Shipping</span>
+                <span>Fast Shipping</span>
               </Col>
               <Col md='4' className='text-center d-none d-md-block'>
                 <i className='fa fa-credit-card' />
@@ -150,12 +150,12 @@ class Navigation extends React.PureComponent {
               </Col>
               <Col md='4' className='text-center d-none d-md-block'>
                 <i className='fa fa-phone' />
-                <span>Call us 951-999-9999</span>
+                <span>Support: support@qudex.io</span>
               </Col>
-              <Col xs='12' className='text-center d-block d-md-none'>
+              {/* <Col xs='12' className='text-center bg-light d-block d-md-none'>
                 <i className='fa fa-phone' />
                 <span> Need advice? Call us 951-999-9999</span>
-              </Col>
+              </Col> */}
             </Row>
           </Container>
         </div>
@@ -180,7 +180,7 @@ class Navigation extends React.PureComponent {
                   />
                 )}
                 <Link to='/'>
-                  <h1 className='logo'>MERN Store</h1>
+                  <h1 className='logo'><img style={{width:"90%"}} src={log}  /></h1>
                 </Link>
               </div>
             </Col>

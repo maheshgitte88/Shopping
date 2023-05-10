@@ -27,7 +27,6 @@ import handleError from '../../utils/error';
 import { allFieldsValidation } from '../../utils/validation';
 import { toggleCart } from '../Navigation/actions';
 
-// Handle Add To Cart
 export const handleAddToCart = product => {
   return (dispatch, getState) => {
     product.quantity = Number(getState().product.productShopData.quantity);
@@ -134,8 +133,8 @@ export const handleCheckout = () => {
       position: 'tr',
       autoDismiss: 1
     };
-
     dispatch(toggleCart());
+   
     dispatch(push('/login'));
     dispatch(success(successfulOptions));
   };

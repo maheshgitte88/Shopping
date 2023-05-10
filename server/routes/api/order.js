@@ -10,17 +10,20 @@ const auth = require('../../middleware/auth');
 const mailgun = require('../../services/mailgun');
 const store = require('../../utils/store');
 const { ROLES, CART_ITEM_STATUS } = require('../../constants');
+const { success } = require('react-notification-system-redux');
 
 router.post('/add', auth, async (req, res) => {
   try {
     const cart = req.body.cartId;
     const total = req.body.total;
     const user = req.user._id;
-
+    const address=req.body.address;
+   console.log(address, 20)
     const order = new Order({
       cart,
       user,
-      total
+      total,
+      address
     });
 
     const orderDoc = await order.save();
@@ -37,7 +40,8 @@ router.post('/add', auth, async (req, res) => {
       created: orderDoc.created,
       user: orderDoc.user,
       total: orderDoc.total,
-      products: cartDoc.products
+      products: cartDoc.products,
+      address:orderDoc.address
     };
 
     await mailgun.sendEmail(order.user.email, 'order-confirmation', newOrder);
@@ -46,6 +50,24 @@ router.post('/add', auth, async (req, res) => {
       success: true,
       message: `Your order has been placed successfully!`,
       order: { _id: orderDoc._id }
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: 'Your request could not be processed. Please try again.'
+    });
+  }
+});
+//payment Mode Api
+
+router.get('/paymentmode', auth, async (req, res) => {
+  try {
+    
+
+   
+
+
+    res.status(200).json({
+
     });
   } catch (error) {
     res.status(400).json({
@@ -239,11 +261,12 @@ router.get('/:orderId', auth, async (req, res) => {
       created: orderDoc.created,
       totalTax: 0,
       products: orderDoc?.cart?.products,
-      cartId: orderDoc.cart._id
+      cartId: orderDoc.cart._id,
+      address:orderDoc.address,
+      payment:orderDoc.payment
     };
 
     order = store.caculateTaxAmount(order);
-
     res.status(200).json({
       order
     });
@@ -347,5 +370,41 @@ const increaseQuantity = products => {
 
   Product.bulkWrite(bulkOptions);
 };
+
+const stripe =require("stripe")(process.env.STRIPE_SECRET_KEY)
+router.post("/create-checkout-session", async (req, res) =>{
+  console.log(req.body, 376)
+  // const data=req.body;
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types:["card"],
+      mode:"payment",
+
+      line_items:req.body.cartItems.map((item) => {
+        return {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: item.name,
+            },
+            unit_amount: item.totalPrice * 100,
+          },
+          adjustable_quantity: {
+            enabled: true,
+            minimum: 1,
+          },
+          quantity: item.quantity,
+        };
+      }),
+       success_url:`http://localhost:8080/dashboard/orders`,
+       cancel_url:'http://localhost:8080/shop'
+    })
+    console.log(session ,402)
+  res.json({url:session.url})
+  } catch (error) {
+    res.status(500).json({error})
+    console.log(error)
+  }
+})
 
 module.exports = router;

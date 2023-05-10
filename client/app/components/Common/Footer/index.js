@@ -8,6 +8,7 @@ import React from 'react';
 
 import { Link } from 'react-router-dom';
 import { Container } from 'reactstrap';
+import log from '../../../../public/images/Logo.png'
 
 import Newsletter from '../../../containers/Newsletter';
 
@@ -51,10 +52,10 @@ const Footer = () => {
           </div>
           <div className='footer-block'>
             <div className='block-title'>
-              <h3 className='text-uppercase'>Links</h3>
+              {/* <h3 className='text-uppercase'>Links</h3> */}
             </div>
             <div className='block-content'>
-              <ul>{footerLinks}</ul>
+              {/* <ul>{footerLinks}</ul> */}
             </div>
           </div>
           <div className='footer-block'>
@@ -65,10 +66,12 @@ const Footer = () => {
           </div>
         </div>
         <div className='footer-copyright'>
-          <span>© {new Date().getFullYear()} MERN Store</span>
+          <span>© {new Date().getFullYear()} shop.qudex.io</span>
         </div>
         <ul className='footer-social-item'>
-          <li>
+
+        <img style={{width:"10%"}} src={log}  />
+          {/* <li>
             <a href='/#facebook' rel='noreferrer noopener' target='_blank'>
               <span className='facebook-icon' />
             </a>
@@ -87,7 +90,7 @@ const Footer = () => {
             <a href='/#twitter' rel='noreferrer noopener' target='_blank'>
               <span className='twitter-icon' />
             </a>
-          </li>
+          </li> */}
         </ul>
       </Container>
     </footer>

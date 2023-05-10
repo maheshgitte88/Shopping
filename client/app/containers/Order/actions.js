@@ -15,12 +15,17 @@ import {
   UPDATE_ORDER_STATUS,
   SET_ORDERS_LOADING,
   SET_ADVANCED_FILTERS,
-  CLEAR_ORDERS
+  CLEAR_ORDERS,
+  FETCH_ADDRESS
 } from './constants';
-
+import React from 'react';
 import { clearCart, getCartId } from '../Cart/actions';
 import { toggleCart } from '../Navigation/actions';
+import {addAddress, fetchAddresses} from '../Address/actions'
 import handleError from '../../utils/error';
+import { useState } from 'react';
+import { Modal } from 'reactstrap';
+import { setMessages } from 'validatorjs';
 
 export const updateOrderStatus = value => {
   return {
@@ -131,7 +136,7 @@ export const fetchOrder = (id, withLoading = true) => {
       }
 
       const response = await axios.get(`/api/order/${id}`);
-
+console.log(response , 139)
       dispatch({
         type: FETCH_ORDER,
         payload: response.data.order
@@ -196,13 +201,34 @@ export const addOrder = () => {
     try {
       const cartId = localStorage.getItem('cart_id');
       const total = getState().cart.cartTotal;
-
+      const address =getState().address.addresses;
+      console.log(address ,205)
       if (cartId) {
         const response = await axios.post(`/api/order/add`, {
           cartId,
-          total
+          total,
+          address
         });
 
+        // dispatch(push(`/order/success/${response.data.order._id}`));
+        dispatch(clearCart());
+      }
+    } catch (error) {
+      handleError(error, dispatch);
+    }
+  };
+};
+export const addOrderCashOn = () => {
+  return async (dispatch, getState) => {
+    try {
+      const cartId = localStorage.getItem('cart_id');
+      const total = getState().cart.cartTotal;
+      console.log(total, 227)
+      if (cartId) {
+        const response = await axios.post(`/api/order/add`, {
+          cartId,
+          total,
+        });
         dispatch(push(`/order/success/${response.data.order._id}`));
         dispatch(clearCart());
       }
@@ -212,21 +238,93 @@ export const addOrder = () => {
   };
 };
 
-export const placeOrder = () => {
+
+// export const paymentCheckOut =  () => {
+//   return (dispatch, getState) => {
+//     const token = localStorage.getItem('token');
+//     const cartItems = getState().cart.cartItems;
+//     console.log(cartItems, 227);
+//     if (token && cartItems.length > 0) {
+
+//       Promise.all([dispatch(getCartId())]).then(() => {
+//         dispatch(addOrder());
+//       });
+//     }
+//     dispatch(toggleCart());
+//   };
+// };
+
+
+
+export const placeOrder =  () => {
   return (dispatch, getState) => {
     const token = localStorage.getItem('token');
-
     const cartItems = getState().cart.cartItems;
+    // const total = getState().cart.cartTotal;
 
     if (token && cartItems.length > 0) {
+      fetch("http://localhost:3000/api/order/create-checkout-session", {
+        method:"post",
+        headers:{
+          "Content-type":"application/json"
+        },
+        mode:"cors",
+        body: JSON.stringify({cartItems
+        })
+      })
+      .then(async res =>{
+        if(res.ok) return res.json()
+        const json = await res.json();
+        return await Promise.reject(json);
+      })
+      .then(({url}) => {
+        window.location=url;
+      })
+      .catch(e=>{
+        console.log(e.error)
+      })
       Promise.all([dispatch(getCartId())]).then(() => {
         dispatch(addOrder());
       });
     }
-
     dispatch(toggleCart());
   };
 };
+
+
+
+// export const placeOrderCashOn =  () => {
+//   return (dispatch, getState) => {
+//     const token = localStorage.getItem('token');
+//     const cartItems = getState().cart.cartItems;
+//     if (token && cartItems.length > 0) {
+//       Promise.all([dispatch(getCartId())]).then(() => {
+//         dispatch(addOrderCashOn());
+//       });
+//     }
+//     dispatch(toggleCart());
+//   };
+// };
+
+
+// export const placeOrder = (selectedPaymentMode) => {
+//   return (dispatch, getState) => {
+//     const token = localStorage.getItem('token');
+
+//     const cartItems = getState().cart.cartItems;
+//     if (token && cartItems.length > 0) {
+//       // Dispatch an action to save the selected payment mode in the store
+//       dispatch(saveSelectedPaymentMode(selectedPaymentMode));
+
+//       // Navigate to the payment selection page
+//       dispatch(push('/order/paymentmode'));
+//     }
+
+//     dispatch(toggleCart());
+//   };
+// };
+
+
 
 export const clearOrders = () => {
   return {

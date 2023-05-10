@@ -15,6 +15,9 @@ import DropdownConfirm from '../../Common/DropdownConfirm';
 
 const OrderItems = props => {
   const { order, user, updateOrderItemStatus } = props;
+console.log(order, 18)
+
+console.log(order.address.map(e=> e.address) ,20)
 
   const renderPopoverContent = item => {
     const statuses = Object.values(CART_ITEM_STATUS);
@@ -131,6 +134,7 @@ const OrderItems = props => {
                         <span className='order-label'>{` $${item.totalPrice}`}</span>
                       </p>
                     </div>
+                    
                   </div>
                 </div>
 
@@ -160,6 +164,37 @@ const OrderItems = props => {
             </div>
           </Col>
         ))}
+      </Row>
+      <Row>
+      <div class="container">
+  <div class="row">
+    {order.address.map((e, i) => (
+      <div class="col-12 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Address {i+1}</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <p class="card-text"><strong>Address:</strong> {e.address}</p>
+                <p class="card-text"><strong>City:</strong> {e.city}</p>
+                <p class="card-text"><strong>Country:</strong> {e.country}</p>
+                <p class="card-text"><strong>Created:</strong> {e.created}</p>
+              </div>
+              <div class="col-md-6 mb-3">
+                <p class="card-text"><strong>Is Default:</strong> {e.isDefault ? 'Yes ✅' : 'No ❌'}</p>
+                <p class="card-text"><strong>State:</strong> {e.state}</p>
+                <p class="card-text"><strong>Zip Code:</strong> {e.zipCode}</p>
+                <p class="card-text"><strong>User:</strong> {e.user}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+
       </Row>
     </div>
   );

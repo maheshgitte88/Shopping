@@ -13,6 +13,9 @@ const config = {
     filename: '[name].js',
     publicPath: '/'
   },
+  watchOptions: {
+    ignored: /C:\\DumpStack\.log\.tmp/
+  },
   module: {
     rules: [
       {
@@ -33,6 +36,7 @@ const config = {
           }
         ]
       },
+      
       {
         test: /\.(png|jpg|jpeg|gif|svg|ico)$/,
         use: [
